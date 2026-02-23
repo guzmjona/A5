@@ -31,11 +31,16 @@ void Sort_Buffer(fstream& main_info_file){
             //grab info
             buffers[i] = Grab_Emp_Record(main_info_file);
             //if there's no info then break out and move on
+            cout << i << ", ";
             if(buffers[i].no_values == -1){
                 break;
             }
             count++;
         }
+
+        cout << buffers[0].emp_record.name << endl;
+        cout << buffers[1].emp_record.name << endl;
+        cout << buffers[2].emp_record.name << endl;
 
         if(count == 0){
             //DEBUGGIN
@@ -53,6 +58,10 @@ void Sort_Buffer(fstream& main_info_file){
                 }
             }
         }
+        cout << "Record have been sorted for the run "<< count <<endl;
+        cout << "Record have been sorted for the run "<< count <<endl;
+        cout << "Record have been sorted for the run "<< count <<endl;
+        cout << "Record have been sorted for the run "<< count <<endl;
 
         //once sorted write into a temporary file
         string filename = "run_" + to_string(run_num) + ".txt";
@@ -66,6 +75,10 @@ void Sort_Buffer(fstream& main_info_file){
         }
         outFile.close();
         run_num++;
+        cout << "Record have been writter for the run "<< run_num <<endl;
+        cout << "Record have been writter for the run "<< run_num <<endl;
+        cout << "Record have been writter for the run "<< run_num <<endl;
+        cout << "Record have been writter for the run "<< run_num <<endl;
     }
 
     return;
@@ -182,15 +195,53 @@ int main() {
     //TO DO: PASS 1, Create sorted runs for Employee_p1.csv using Sort_Buffer()
     Sort_Buffer(empin);
     empin.close();
-
+    cout << "Sorting has been done" << endl;
+    cout << "Sorting has been done" << endl;
+    cout << "Sorting has been done" << endl;
+    cout << "Sorting has been done" << endl;
+    
     //TO DO: PASS 2, Use Merge_Runs() to sort the runs and generate EmpSorted.csv
     Merge_Runs(SortOut);
+    cout << "mergin has been done" << endl;
+    cout << "mergin has been done" << endl;
+    cout << "mergin has been done" << endl;
+    cout << "mergin has been done" << endl;
     //PrintSorted(&SortOut);
 
     //Please delete the temporary files (runs) after you've sorted the Employee_p1.csv
     for (const string& filename : temp_files) {
         remove(filename.c_str());
     }
+
+    cout << "checking to make sure it works good" << endl;
+    //open sorted file
+    empin.open("EmpSorted.csv", ios::in); 
+
+    //parse the first line and only read the id
+    string line;
+    vector<int> my_ids;
+    getline(empin, line);
+    stringstream ss(line);
+    string word;  
+    getline(ss, word, ',');
+    my_ids.push_back(stoi(word));
+
+    //read the rest of the sorted file and check that the previos is less than the next one
+    int counter = 0;
+    while(getline(empin, line)){
+        stringstream ss(line);
+        string word;  
+        getline(ss, word, ',');
+        my_ids.push_back(stoi(word));
+        counter++;
+        if(my_ids[counter-1] > my_ids[counter]){
+            cout << "we found 2 ids in the wrong place" << endl;
+            cout << "row: " << counter-1 << " and " << counter << "are swapped" << endl;
+            break;
+        }
+    }
+    
+
 
     return 0;
 }
