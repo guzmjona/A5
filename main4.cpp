@@ -1,7 +1,7 @@
-"""
+/*
 Lauren Gliane
 Jonathan Guzman
-"""
+*/
 /* This is a skeleton code for two-pass multi-way sorting. You can make modifications as long as you meet 
    all question requirements. You are also free to change the return type and arguments as needed. */
 
@@ -21,7 +21,7 @@ vector<string> temp_files;
 
 //Function for PASS 1
 // TODO: Complete the following function to sort the buffers and store the sorted records into a temporary file (Runs).
-void Sort_Buffer(fstream main_info_file){
+void Sort_Buffer(fstream& main_info_file){
     int run_num = 0;
     while(1){
         //read info to records
@@ -29,7 +29,7 @@ void Sort_Buffer(fstream main_info_file){
         //for every slot in the buffer
         for(int i = 0; i < buffer_size; i++){
             //grab info
-            buffers[i] = Grab_Emp_Record(empin);
+            buffers[i] = Grab_Emp_Record(main_info_file);
             //if there's no info then break out and move on
             if(buffers[i].no_values == -1){
                 break;
@@ -55,8 +55,8 @@ void Sort_Buffer(fstream main_info_file){
         }
 
         //once sorted write into a temporary file
-        string filename = "run_" + to_string(runNum) + ".txt";
-        runFiles.push_back(filename);
+        string filename = "run_" + to_string(run_num) + ".txt";
+        temp_files.push_back(filename);
         fstream outFile(filename, ios::out);
         for(int i = 0; i < count; i++){
             outFile << buffers[i].emp_record.id << ","
@@ -71,19 +71,31 @@ void Sort_Buffer(fstream main_info_file){
     return;
 }
 
+// TODO: Complete the following function to store the sorted results from PASS 2 into EmpSorted.csv.
+void PrintSorted(fstream &sourted_out_file, Records& one_record){
+
+    //write to sorted out 
+    sourted_out_file << one_record.emp_record.id << ","
+            << one_record.emp_record.name << ","
+            << one_record.emp_record.bio << ","
+            << one_record.emp_record.manager_id << endl;
+
+    return;
+}
+
 //Function for PASS 2
 // TODO: Complete the following function to merge the sorted temporary files ('runs') and store the final result in EmpSorted.csv using PrintSorted().
-void Merge_Runs(fstream* sourted_out_file){
+void Merge_Runs(fstream &sourted_out_file){
     int num_runs = temp_files.size();
     //array to pointes that points to the files
-    fstream* temp_files_fstream = new fstream[numRuns];
-    Records* current_records = new Records[numRuns];
-    bool* has_data = new bool[numRuns];
+    fstream* temp_files_fstream = new fstream[num_runs];
+    Records* current_records = new Records[num_runs];
+    bool* has_data = new bool[num_runs];
     
 
     //open all the temp files and read the first record aka the one with the lowest id
-    for(int i = 0; i < numRuns; i++){
-        temp_files_fstream[i].open(runFiles[i], ios::in);
+    for(int i = 0; i < num_runs; i++){
+        temp_files_fstream[i].open(temp_files[i], ios::in);
         string line;
         if (getline(temp_files_fstream[i], line)) {
             stringstream ss(line);
@@ -109,7 +121,7 @@ void Merge_Runs(fstream* sourted_out_file){
         //find smallest record
         int smallest_index = -1;
         int smallest_id = INT_MAX;
-        for (int i = 0; i < numRuns; i++) {
+        for (int i = 0; i < num_runs; i++) {
             if (has_data[i] && current_records[i].emp_record.id < smallest_id) {
                 smallest_id = current_records[i].emp_record.id;
                 smallest_index = i;
@@ -119,7 +131,7 @@ void Merge_Runs(fstream* sourted_out_file){
         if(smallest_index == -1) break; //no more records
         
         //write out smallest record
-        
+        PrintSorted(sourted_out_file, current_records[smallest_index]);
         
         //read next record from that temp file
         string line;
@@ -141,10 +153,10 @@ void Merge_Runs(fstream* sourted_out_file){
     }
     
     // Close all files
-    for (int i = 0; i < numRuns; i++) {
+    for (int i = 0; i < num_runs; i++) {
         temp_files_fstream[i].close();
     }
-    SortOut.close();
+    sourted_out_file.close();
     
     // Clean up dynamic arrays
     delete[] temp_files_fstream;
@@ -154,17 +166,7 @@ void Merge_Runs(fstream* sourted_out_file){
     return;
 }
 
-// TODO: Complete the following function to store the sorted results from PASS 2 into EmpSorted.csv.
-void PrintSorted(fstream* sourted_out_file){
 
-    //write to sorted out 
-    SortOut << current_records[smallest_index].emp_record.id << ","
-            << current_records[smallest_index].emp_record.name << ","
-            << current_records[smallest_index].emp_record.bio << ","
-            << current_records[smallest_index].emp_record.manager_id << endl;
-
-    return;
-}
 
 int main() {
 
@@ -182,8 +184,8 @@ int main() {
     empin.close();
 
     //TO DO: PASS 2, Use Merge_Runs() to sort the runs and generate EmpSorted.csv
-    Merge_Runs(&SortOut);
-    PrintSorted(&SortOut);
+    Merge_Runs(SortOut);
+    //PrintSorted(&SortOut);
 
     //Please delete the temporary files (runs) after you've sorted the Employee_p1.csv
     for (const string& filename : temp_files) {

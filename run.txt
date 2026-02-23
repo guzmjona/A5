@@ -1,0 +1,1 @@
+clear; clear; g++ -std=c++11 main4.cpp -o main4.out > main4.out; ./main4.out
