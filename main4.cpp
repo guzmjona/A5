@@ -23,7 +23,7 @@ vector<string> temp_files;
 // TODO: Complete the following function to sort the buffers and store the sorted records into a temporary file (Runs).
 void Sort_Buffer(fstream& main_info_file){
     int run_num = 0;
-    while(1){
+    while(!main_info_file.eof()){
         //read info to records
         int count = 0;
         //for every slot in the buffer
@@ -80,7 +80,8 @@ void Sort_Buffer(fstream& main_info_file){
         cout << "Record have been writter for the run "<< run_num <<endl;
         cout << "Record have been writter for the run "<< run_num <<endl;
     }
-
+    //int mom = 0;
+    //cin >> mom;
     return;
 }
 
@@ -240,8 +241,6 @@ int main() {
             break;
         }
     }
-    
-
 
     return 0;
 }
