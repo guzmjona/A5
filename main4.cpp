@@ -1,5 +1,6 @@
 /*
 Lauren Gliane
+do we need IDS?
 Jonathan Guzman
 */
 /* This is a skeleton code for two-pass multi-way sorting. You can make modifications as long as you meet 
